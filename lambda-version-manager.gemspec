@@ -15,5 +15,5 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'aws-sdk', '~> 1.0.0.rc2'
   s.add_dependency 'thor'
-  S.add_dependency 'thor-scmversion'
+  s.add_dependency 'thor-scmversion'
 end
