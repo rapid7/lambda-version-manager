@@ -7,8 +7,9 @@ class Deployer
   attr_accessor :project
   attr_accessor :lambda
   attr_accessor :artifact
+  attr_accessor :environments
 
-  def initialize(project_path, account, artifact, lambda)
+  def initialize(project_path, account, artifact=nil, lambda=nil)
     @project_path  = project_path
     @account = account
     @project = Project.new("#{project_path}")
@@ -47,9 +48,10 @@ class Deployer
     #Filter by account as the primary owner of envs
     lambda_env_map = project.get_lambdas
     lambda_env_map = get_deployable_lambdas(lambda_env_map)
+    environments ||= project.environments
     account_env_map.each do |env|
       #IF users has specified environments, skip if the environment is not a user specified one
-      next if !environments.nil? && environments.include?(env)
+      next unless !environments.nil? && environments.include?(env)
       lambda_env_map[env].each do |lambda_name, properties|
         client = Client.new(env_region_map[env])
 
@@ -60,7 +62,7 @@ class Deployer
         puts "Lambda Name: #{lambda_name}"
         puts "S3 Bucket: #{s3_bucket}"
         puts "S3 Key:  #{s3_key}"
-        #client.update_function_code(lambda_name,s3_bucket,s3_key)
+        client.update_function_code(lambda_name,s3_bucket,s3_key)
       end
     end
   end
