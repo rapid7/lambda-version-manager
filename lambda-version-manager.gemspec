@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'lambda-version-manager'
-  s.version     = '0.0.9'
+  s.version     = '0.0.10'
   s.date        = '2019-02-19'
   s.summary     = "Lambda version manager"
   s.description = "Updates aws lambda versions to match a yaml property file"
@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.license       = 'MIT'
   s.executables = %w(lambda-version-manager)
   s.bindir = 'bin'
-  s.add_dependency 'aws-sdk', '~> 1.0.0.rc2'
+  s.add_dependency 'aws-sdk-lambda', '~> 1.0.0.rc2'
   s.add_dependency 'thor'
   s.add_dependency 'thor-scmversion'
 end
