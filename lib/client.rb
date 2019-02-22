@@ -1,4 +1,4 @@
-require 'aws-sdk-lambda'
+require 'aws-sdk'
 class Client
   attr_accessor :client
   def initialize(aws_region)
