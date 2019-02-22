@@ -81,7 +81,7 @@ class Deployer
     if properties['s3_key']
       return properties['s3_key']
     else
-      return "#{config['environments'][env]['base_path']}/#{properties['artifact_name']}#{properties['artifact_name']}-#{properties['version']}.#{properties['extension']}"
+      return "#{config['environments'][env]['base_path']}/#{properties['artifact_name']}-#{properties['version']}.#{properties['extension']}"
     end
   end
 end
