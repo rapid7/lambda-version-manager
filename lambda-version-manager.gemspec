@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.license       = 'MIT'
   s.executables = %w(lambda-version-manager)
   s.bindir = 'bin'
-  s.add_dependency 'aws-sdk-lambda', '~> 1.0.0.rc2'
+  s.add_dependency 'aws-sdk-lambda', '~> 1.0.0.rc8'
   s.add_dependency 'thor'
   s.add_dependency 'thor-scmversion'
 end

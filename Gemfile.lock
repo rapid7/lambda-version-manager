@@ -23,7 +23,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  aws-sdk-lambda (~> 1.0.0.rc2)
+  aws-sdk-lambda (~> 1.0.0.rc8)
   thor
   thor-scmversion (= 1.7.0)
 
