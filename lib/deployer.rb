@@ -1,5 +1,6 @@
 require_relative 'client'
 require_relative 'project'
+require 'fileutils'
 class Deployer
   attr_accessor :project_path
   attr_accessor :account
@@ -47,6 +48,7 @@ class Deployer
     env_region_map = project.env_region_map
     #Filter by account as the primary owner of envs
     lambda_env_map = project.get_lambdas
+    lambda_env_map = diff_projects(lambda_env_map)
     lambda_env_map = get_deployable_lambdas(lambda_env_map)
     environments ||= project.environments
     account_env_map.each do |env|
@@ -65,6 +67,7 @@ class Deployer
         client.update_function_code(lambda_name,s3_bucket,s3_key)
       end
     end
+    archive_project
   end
 
 
@@ -83,6 +86,34 @@ class Deployer
     else
       return "#{config['environments'][env]['base_path']}/#{properties['artifact_name']}-#{properties['version']}.#{properties['extension']}"
     end
+  end
+
+  def archive_project
+    if Dir.exist?("#{project_path}/.history/")
+      FileUtils.remove_dir("#{project_path}/.history/environments")
+      FileUtils.remove_dir("#{project_path}/.history/config")
+    end
+    FileUtils.copy_entry("#{project_path}/config","#{project_path}/.history/config")
+    FileUtils.copy_entry("#{project_path}/environments","#{project_path}/.history/environments")
+  end
+
+  def parse_archive
+    archived_project = Project.new("#{project_path}/.history/")
+    archived_project.get_lambdas
+  end
+
+  def diff_projects(new_project)
+    historic = parse_archive
+    historic.each do |environment, lambdas|
+      lambdas.each do |lambda, configs|
+        if new_project[environment][lambda].eql?(configs)
+          new_project[environment].delete(lambda)
+        end
+      end
+      #Delete empty environments as no lambdas changed so they all removed from bing deployable
+      new_project.delete(environment) if new_project[environment].empty?
+    end
+    new_project
   end
 end
 
