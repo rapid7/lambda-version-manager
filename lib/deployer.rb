@@ -103,6 +103,9 @@ class Deployer
   end
 
   def diff_projects(new_project)
+    unless Dir.exist?("#{project_path}/.history/")
+      return new_project
+    end
     historic = parse_archive
     historic.each do |environment, lambdas|
       lambdas.each do |lambda, configs|
