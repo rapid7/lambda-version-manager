@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'lambda-version-manager'
-  s.version     = '0.0.13'
+  s.version     = '0.0.14'
   s.date        = '2019-02-19'
   s.summary     = "Lambda version manager"
   s.description = "Updates aws lambda versions to match a yaml property file"
