@@ -14,6 +14,7 @@ class GeneratorCLI < ::Thor
   option 'lambda', banner: 'LAMBDA', type: :string, desc: 'Deploy lambdas with this name'
   option 'account', banner: 'ACCOUNT', type: :string, desc: 'Account to deploy to', :required => true
   option 'version_map_file', banner: 'VERSION_MAP_FILE', type: :string, desc: 'A java properties file mapping artifacts to update to version'
+  option 'deploy_all', banner: 'DEPLOY_ALL', type: :boolean, desc: 'Ignore the history therefore deploy everything included in the filter', default: false
 
   def deploy
     opts = validate_deploy(options)
@@ -21,11 +22,11 @@ class GeneratorCLI < ::Thor
       #for each x=y pair we need to call
       File.readlines(options['version_map_file']).each do |line|
         array = line.split("=")
-        deployer = Deployer.new(opts['project_path'], opts['account'], array[0].strip)
+        deployer = Deployer.new(opts['deploy_all'], opts['project_path'], opts['account'], array[0].strip)
         deployer.deploy(opts['environments'])
       end
     else
-      deployer = Deployer.new(opts['project_path'], opts['account'], opts['artifact'], opts['lambda'])
+      deployer = Deployer.new(opts['deploy_all'], opts['project_path'], opts['account'], opts['artifact'], opts['lambda'])
       deployer.deploy(opts['environments'])
     end
   end
