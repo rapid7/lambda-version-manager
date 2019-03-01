@@ -9,8 +9,10 @@ class Deployer
   attr_accessor :lambda
   attr_accessor :artifact
   attr_accessor :environments
+  attr_accessor :deploy_all
 
-  def initialize(project_path, account, artifact=nil, lambda=nil)
+  def initialize(deploy_all, project_path, account, artifact=nil, lambda=nil)
+    @deploy_all = deploy_all
     @project_path  = project_path
     @account = account
     @project = Project.new("#{project_path}")
@@ -48,7 +50,13 @@ class Deployer
     env_region_map = project.env_region_map
     #Filter by account as the primary owner of envs
     lambda_env_map = project.get_lambdas
-    lambda_env_map = diff_projects(lambda_env_map)
+    unless deploy_all
+      lambda_env_map = diff_projects(lambda_env_map)
+      if lambda_env_map.empty?
+        puts "No lambdas have been changed, skipping deploy"
+        return
+      end
+    end
     lambda_env_map = get_deployable_lambdas(lambda_env_map)
     environments ||= project.environments
     account_env_map.each do |env|
@@ -66,8 +74,8 @@ class Deployer
         puts "S3 Key:  #{s3_key}"
         client.update_function_code(lambda_name,s3_bucket,s3_key)
       end
+      archive_project(env)
     end
-    archive_project
   end
 
 
@@ -88,13 +96,10 @@ class Deployer
     end
   end
 
-  def archive_project
-    if Dir.exist?("#{project_path}/.history/")
-      FileUtils.remove_dir("#{project_path}/.history/environments")
-      FileUtils.remove_dir("#{project_path}/.history/config")
-    end
+  def archive_project(environment)
+    FileUtils.mkpath("#{project_path}/.history/")
     FileUtils.copy_entry("#{project_path}/config","#{project_path}/.history/config")
-    FileUtils.copy_entry("#{project_path}/environments","#{project_path}/.history/environments")
+    FileUtils.copy_entry("#{project_path}/environments/#{environment}.yaml","#{project_path}/.history/environments/#{environment}.yaml")
   end
 
   def parse_archive
@@ -103,9 +108,6 @@ class Deployer
   end
 
   def diff_projects(new_project)
-    unless Dir.exist?("#{project_path}/.history/")
-      return new_project
-    end
     historic = parse_archive
     historic.each do |environment, lambdas|
       lambdas.each do |lambda, configs|
