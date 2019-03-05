@@ -61,7 +61,8 @@ class Deployer
     environments ||= project.environments
     account_env_map.each do |env|
       #IF users has specified environments, skip if the environment is not a user specified one
-      next unless !environments.nil? && environments.include?(env)
+      next unless !environments.nil?
+      next unless environments.include?(env)
       lambda_env_map[env].each do |lambda_name, properties|
         client = Client.new(env_region_map[env])
 
