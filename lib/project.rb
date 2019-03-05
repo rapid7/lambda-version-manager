@@ -45,13 +45,14 @@ class Project
   end
 
 
+
   def write_new_files(lambda_env_map)
     lambda_env_map.each do |env, contents|
       File.write("#{project_path}/environments/#{env}.yaml", contents.to_yaml)
     end
   end
 
-  def update_by_artifact(lambda_env_map, artifact, version)
+  def update_by_artifact(lambda_env_map, artifact, version, sha1=nil)
     #iterate through all lambdas and update the ones with version changes
     lambda_env_map.each do |env, lambda|
       pp env
@@ -59,6 +60,7 @@ class Project
       lambda.each do |lambda_name, properties|
         if properties['artifact_name'] == artifact
           properties['version'] = version
+          properties['sha1'] = sha1 unless sha1.nil?
         end
       end
     end

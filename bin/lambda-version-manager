@@ -13,30 +13,20 @@ class GeneratorCLI < ::Thor
   option 'artifact', banner: 'ARTIFACT', type: :string, desc: 'Deploy lambdas that use this artifact'
   option 'lambda', banner: 'LAMBDA', type: :string, desc: 'Deploy lambdas with this name'
   option 'account', banner: 'ACCOUNT', type: :string, desc: 'Account to deploy to', :required => true
-  option 'version_map_file', banner: 'VERSION_MAP_FILE', type: :string, desc: 'A java properties file mapping artifacts to update to version'
   option 'deploy_all', banner: 'DEPLOY_ALL', type: :boolean, desc: 'Ignore the history therefore deploy everything included in the filter', default: false
 
   def deploy
     opts = validate_deploy(options)
-    if opts['version_map_file']
-      #for each x=y pair we need to call
-      File.readlines(options['version_map_file']).each do |line|
-        array = line.split("=")
-        deployer = Deployer.new(opts['deploy_all'], opts['project_path'], opts['account'], array[0].strip)
-        deployer.deploy(opts['environments'])
-      end
-    else
-      deployer = Deployer.new(opts['deploy_all'], opts['project_path'], opts['account'], opts['artifact'], opts['lambda'])
-      deployer.deploy(opts['environments'])
-    end
+    deployer = Deployer.new(opts['deploy_all'], opts['project_path'], opts['account'], opts['artifact'], opts['lambda'])
+    deployer.deploy(opts['environments'])
   end
 
   desc 'update_project', 'Update the versions'
   option 'project_path', banner: 'PROJECT_PATH', type: :string, desc: 'Path to the lambda version mappings project'
   option 'artifact', banner: 'ARTIFACT', type: :string, desc: 'Deploy lambdas that use this artifact'
   option 'version', banner: 'VERSION', type: :string, desc: 'Version of the new artifact'
-  option 'version_map_file', banner: 'VERSION_MAP_FILE', type: :string, desc: 'A java properties file mapping artifacts to update to version'
   option 'accounts', banner: 'ACCOUNT', type: :array, desc: 'Account to deploy to', :required => true
+  option 'sha1', banner: 'SHA1', type: :string, desc: 'SHA1 of the artifact'
 
   def update_project
     opts = validate_project_update(options)
@@ -55,31 +45,21 @@ class GeneratorCLI < ::Thor
       end
     end
 
-
-    if opts['version_map_file']
-      #for each artifact=version pair we need to call
-      File.readlines(opts['version_map_file']).each do |line|
-        array = line.split("=")
-        updated_files = project.update_by_artifact(lambda_env_map, array[0].strip, array[1].strip)
-        lambda_env_map = updated_files
-      end
-    else
-      lambda_env_map = project.update_by_artifact(lambda_env_map, opts['artifact'], opts['version'])
-    end
+    lambda_env_map = project.update_by_artifact(lambda_env_map, opts['artifact'], opts['version'], opts['sha1'])
     project.write_new_files(lambda_env_map)
   end
 
   no_commands do
     def validate_project_update(options)
-      unless options['version_map_file'] || (options['version'] && (options['lambda'] || options['artifact']))
-        raise 'Either a file must be specified or a version and lambda or artifact.'
+      unless options['version'] && (options['lambda'] || options['artifact'])
+        raise 'Either a version and lambda or artifact must be specified.'
       end
       options.dup
     end
 
     def validate_deploy(options)
-      unless options['version_map_file'] || options['environments'] || options['lambda'] || options['artifact']
-        raise 'Either a file must be specified or a environment or lambda or artifact.'
+      unless options['environments'] || options['lambda'] || options['artifact']
+        raise 'Either a environment or lambda or artifact must be specified.'
       end
       options.dup
     end
