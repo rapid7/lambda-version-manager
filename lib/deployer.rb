@@ -112,7 +112,7 @@ class Deployer
     historic.each do |environment, lambdas|
       lambdas.each do |lambda, configs|
         if new_project[environment][lambda].has_key?('sha1')
-          unless configs.has_key?('sha1')  && (configs['sha1'] == new_project[environment][lambda]['sha1'])
+          if configs.has_key?('sha1')  && (configs['sha1'] == new_project[environment][lambda]['sha1'])
             new_project[environment].delete(lambda)
           end
         elsif new_project[environment][lambda].eql?(configs)
