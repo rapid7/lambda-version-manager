@@ -15,14 +15,14 @@ cd config
 touch config.yml
 ```
 
-The config.yml will define essential configurations that the lambda version manager needs update the lambdas with the correct s3 key location.
+The config.yml will define essential configurations that the lambda version manager needs to update the lambdas with the correct s3 key location.
 In the config.yml file we need three keys set to explain our project to the generator.
 
-1. The `environments` key. This key will define a array of the environments that we are setting properties for. Environments must be unique.
+1. The `environments` key. This key will define an array of the environments that we are setting properties for. Environments must be unique.
 2. Under each `environment` value the following values must be defined. 
-    * `region` The aws region for the environment. This is used to making aws sdk calls. 
-    * `account` The aws account that this environment lives in. This can be used to limits deployments for example between staging and prod accounts.
-    * `s3_bucket` The s3 bucket that lambda artifacts are uploaded too.
+    * `region` The aws region for the environment. This is used to make aws sdk calls. 
+    * `account` The aws account that this environment lives in. This can be used to limit deployments for example between staging and prod accounts.
+    * `s3_bucket` The s3 bucket that lambda artifacts are uploaded to.
     * `base_path` The path in the s3 bucket above to the lambda artifacts. 
     
 Here is a example config.yml
@@ -47,6 +47,7 @@ environments:
     
 ##### Step 2: Creating your environments
 The environments folder will contain the environments which will contain the managed lambdas.
+
 ###### Top level globals
 1. Create a environments folder
 ```sh
@@ -62,7 +63,7 @@ touch staging.yaml
 ```
 
 ###### Managing Lambdas in an Environment
-1. To manage a lambda in a give environment it must be defined in the given environment file by its function name. 
+1. To manage a lambda in a given environment it must be defined in the given environment file by its function name. 
 2. The top level key must be the function(lambda) name.
 3. Below the function name define the following keys
     * `artifact_name` The artifact name. This name must match the name of the built artifact the lambda uses.
