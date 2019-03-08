@@ -95,3 +95,11 @@ The command below will update the yaml configuration block for the lambdas that 
 ```sh
 ./lambda-version-manager update_project --project_path ~/example-lambdas/ --artifact user-registration --version 1.0.42-SNAPSHOT --accounts 123456789101
 ```
+
+#### Deploying Lambdas Continued
+When you use the lambda version manager to deploy a lambda it will update the .history directory with a copy of the latest yaml file for the environment deployed. This allows the tool to run a diff before a deployment and deploy only updated lambdas. This enables the following use case.
+ * Using lambda version manager update_project command to update the configs to the new version or sha1 in the lambda build job.
+ * Use a separate job triggered by scm updates that will deploy the newly updated lambda only. This allows you to also make manual changes to the lambda version project and have those deployed as well. Decoupling the deployment portion from the build job.
+
+If you are not worried about updating only the changed lambda code this process can be simplified and the history tracking stuff can be ignored. You can use the `deploy_all` flag to deploy everything that matches your filter regardless of changes. 
+
