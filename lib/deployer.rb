@@ -111,6 +111,7 @@ class Deployer
     historic = parse_archive
     historic.each do |environment, lambdas|
       lambdas.each do |lambda, configs|
+        next if new_project[environment][lambda].nil?
         if new_project[environment][lambda].has_key?('sha1')
           if configs.has_key?('sha1')  && (configs['sha1'] == new_project[environment][lambda]['sha1'])
             new_project[environment].delete(lambda)
