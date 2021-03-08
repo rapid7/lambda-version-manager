@@ -14,7 +14,7 @@ class Project
   def get_lambdas
     lambdas = {}
     environments.keys.each do |env|
-      lambdas[env] = YAML.load_file("#{project_path}/environments/#{env}.yaml")
+      lambdas[env] = YAML.load_file("#{project_path}/environments/#{env}.yaml") if File.exist?("#{project_path}/environments/#{env}.yaml")
     end
     lambdas
   end
