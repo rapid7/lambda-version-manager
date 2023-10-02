@@ -1,0 +1,15 @@
+---
+info:
+  title: Lambda Version Manager
+  description: Lambda version manager for deploying lambdas based on yaml file configs
+  x-cortex-git:
+    github:
+      alias: r7org
+      repository: rapid7/lambda-version-manager
+  x-cortex-tag: lambda-version-manager
+  x-cortex-type: service
+  x-cortex-domain-parents:
+  - tag: platform-delivery
+openapi: 3.0.1
+servers:
+- url: "/"
